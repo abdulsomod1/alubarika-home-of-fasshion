@@ -9,8 +9,6 @@ const header = document.querySelector("[data-site-header]");
 if (header) {
   header.innerHTML = `<header class="site-header"><a class="brand" href="index.html" aria-label="Albarika Home of Designs home"><span class="brand__mark" aria-hidden="true">AHD</span><span class="brand__name">Albarika<span class="brand__sub">CLOTH & TAILORING</span></span></a><button class="menu-toggle" type="button" aria-expanded="false" aria-label="Open menu"><span></span><span></span></button><nav class="primary-nav" aria-label="Main navigation">${navItems.map(([label, href]) => `<a href="${href}"${location.pathname.endsWith(href) ? ' aria-current="page"' : ""}>${label}</a>`).join("")}</nav><div class="header-actions"><a class="login-shortcut" href="account.html">Account</a><a class="cart-link" href="cart.html" aria-label="Shopping bag">Bag <span class="cart-count" data-cart-count>0</span></a></div></header>`;
   const menuButton = header.querySelector(".menu-toggle");
-  const isSolidPage = page && !["home"].includes(page);
-  header.classList.toggle("site-header--solid", isSolidPage);
   menuButton.addEventListener("click", () => {
     const nav = header.querySelector(".primary-nav");
     const open = menuButton.getAttribute("aria-expanded") === "true";

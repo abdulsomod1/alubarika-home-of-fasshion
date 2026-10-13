@@ -1,18 +1,18 @@
 /* ── 900px breakpoint ─────────────────────────────────────────── */
 @media (max-width: 900px) {
+  html { scroll-padding-top: 76px; }
   .site-header { height: 76px; }
   .menu-toggle { display: flex; align-items: center; justify-content: center; }
   .primary-nav {
     position: absolute; top: 76px; right: 0; left: 0;
     padding: 22px 28px 28px; display: none; align-items: stretch; gap: 0;
-    background: var(--paper); color: var(--ink);
-    box-shadow: 0 6px 24px rgba(0,0,0,.08);
+    background: #171714; color: white;
+    box-shadow: 0 6px 24px rgba(0,0,0,.2);
     overflow-x: auto;
   }
   .primary-nav.is-open { display: grid; }
-  .primary-nav a { padding: 13px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  .primary-nav a { padding: 13px 0; border-bottom: 1px solid #ffffff18; white-space: nowrap; }
   .primary-nav a:after { display: none; }
-  .site-header:not(.site-header--solid) .primary-nav { background: #242320; color: white; }
   .header-actions { gap: 14px; }
   .header-actions .login-shortcut { display: none; }
   .brand { min-width: 0; }
@@ -34,6 +34,7 @@
   .section-wrap { width: calc(100% - 40px); margin-inline: auto; }
 
   /* Header & nav */
+  html { scroll-padding-top: 68px; }
   .site-header { height: 68px; padding: 0 20px; }
   .brand__mark { width: 34px; height: 34px; font-size: 13px; }
   .brand__name { font-size: 15px; }
