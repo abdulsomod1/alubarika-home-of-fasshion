@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Add a design | AHD Studio</title>
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <script type="module" src="../js/staff.js"></script>
+</head>
+<body data-staff="products">
+  <main class="dashboard">
+    <aside class="dashboard-nav">
+      <a class="brand" href="index.html"><span class="brand__mark">AHD</span><span class="brand__name">Albarika<span class="brand__sub">STUDIO WORKSPACE</span></span></a>
+      <nav>
+        <a href="index.html">My studio</a>
+        <a href="uploads.html">New upload</a>
+        <a class="is-active" href="products.html">Add a design</a>
+        <a href="my-content.html">My content</a>
+      </nav>
+      <a href="../index.html">← View storefront</a>
+    </aside>
+    <section class="dashboard-main">
+      <header class="dashboard-top">
+        <div>
+          <p class="eyebrow eyebrow--ink">ALBARIKA / STUDIO</p>
+          <h1>Add a design.</h1>
+        </div>
+        <a class="text-link" href="my-content.html">My listings ↗</a>
+      </header>
+      <p class="dashboard-status" data-staff-status></p>
+
+      <details class="dashboard-panel" open>
+        <summary class="panel-heading"><h2>New listing</h2></summary>
+        <form class="dashboard-form" data-product-form novalidate>
+          <div class="field">
+            <label for="product-title">Title *</label>
+            <input id="product-title" name="title" required maxlength="180" placeholder="e.g. Hand-dyed Aso-oke cotton">
+          </div>
+          <div class="field">
+            <label for="product-description">Description</label>
+            <textarea id="product-description" name="description" maxlength="5000" rows="4" placeholder="Describe the cloth, its qualities, and what it is best used for."></textarea>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="product-type">Listing type *</label>
+              <select id="product-type" name="listing_type" required>
+                <option value="fabric">Fabric</option>
+                <option value="garment">Ready to wear</option>
+                <option value="tailoring">Made to measure</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="product-unit">Sold by</label>
+              <select id="product-unit" name="unit">
+                <option value="metre">Metre</option>
+                <option value="yard">Yard</option>
+                <option value="piece">Piece</option>
+                <option value="set">Set</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="product-color">Colour</label>
+              <input id="product-color" name="color" maxlength="80" placeholder="e.g. Midnight navy">
+            </div>
+            <div class="field">
+              <label for="product-composition">Fabric composition</label>
+              <input id="product-composition" name="fabric_composition" maxlength="160" placeholder="e.g. 100% cotton">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="product-width">Fabric width (cm)</label>
+              <input id="product-width" name="fabric_width_cm" type="number" min="1" step="1" placeholder="e.g. 110">
+            </div>
+            <div class="field">
+              <label for="product-price">Price in NGN (per selected unit)</label>
+              <input id="product-price" name="price" type="number" min="0" step="0.01" placeholder="e.g. 4500">
+            </div>
+          </div>
+          <div class="field">
+            <label for="product-availability">Availability</label>
+            <select id="product-availability" name="availability">
+              <option value="available">Available</option>
+              <option value="enquiry">Enquire for availability</option>
+              <option value="unavailable">Currently unavailable</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="product-cover">Cover image</label>
+            <div class="upload-drop">
+              <input id="product-cover" name="cover" type="file" accept="image/jpeg,image/png,image/webp,image/avif,video/mp4,video/webm,video/ogg">
+              <div class="upload-drop__preview" data-cover-preview></div>
+            </div>
+            <small>JPG, PNG, WebP, AVIF, or MP4/WebM. Upload the image or video first, then fill in the rest of the form before submitting.</small>
+          </div>
+          <p class="form-error" data-form-error aria-live="polite"></p>
+          <div class="field-row">
+            <button class="button button--dark" type="submit" data-submit-btn>Save as draft</button>
+            <p class="field-help">Your listing will be saved as a draft. An administrator will review and publish it.</p>
+          </div>
+        </form>
+      </details>
+
+      <details class="dashboard-panel">
+        <summary class="panel-heading"><h2>My listings</h2></summary>
+        <div class="management-tools">
+          <input type="search" placeholder="Search my listings…" data-search>
+          <select data-status-filter aria-label="Filter status">
+            <option value="">All statuses</option>
+            <option>draft</option>
+            <option>pending</option>
+            <option>published</option>
+            <option>rejected</option>
+          </select>
+        </div>
+        <div data-my-products></div>
+      </details>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,76 @@
+import { supabase } from "./supabase.js";
+import { SUPABASE_CONFIG_ERROR } from "./config.js";
+import { getPublished, getProducts, getSettings, mediaUrl } from "./data.js";
+import { escapeHtml, money, notify } from "./utils.js";
+
+const page = document.body.dataset.page;
+const navItems = [["Fabrics", "shop.html"], ["Tailoring", "services.html"], ["Our work", "portfolio.html"], ["Gallery", "gallery.html"], ["About", "about.html"], ["Contact", "contact.html"]];
+const header = document.querySelector("[data-site-header]");
+if (header) {
+  header.innerHTML = `<header class="site-header"><a class="brand" href="index.html" aria-label="Albarika Home of Designs home"><span class="brand__mark" aria-hidden="true">AHD</span><span class="brand__name">Albarika<span class="brand__sub">CLOTH & TAILORING</span></span></a><button class="menu-toggle" type="button" aria-expanded="false" aria-label="Open menu"><span></span><span></span></button><nav class="primary-nav" aria-label="Main navigation">${navItems.map(([label, href]) => `<a href="${href}"${location.pathname.endsWith(href) ? ' aria-current="page"' : ""}>${label}</a>`).join("")}</nav><div class="header-actions"><a class="login-shortcut" href="account.html">Account</a><a class="cart-link" href="cart.html" aria-label="Shopping bag">Bag <span class="cart-count" data-cart-count>0</span></a></div></header>`;
+  const menuButton = header.querySelector(".menu-toggle");
+  const isSolidPage = page && !["home"].includes(page);
+  header.classList.toggle("site-header--solid", isSolidPage);
+  menuButton.addEventListener("click", () => {
+    const nav = header.querySelector(".primary-nav");
+    const open = menuButton.getAttribute("aria-expanded") === "true";
+    menuButton.setAttribute("aria-expanded", String(!open));
+    menuButton.setAttribute("aria-label", open ? "Open menu" : "Close menu");
+    nav.classList.toggle("is-open", !open);
+  });
+}
+const footer = document.querySelector("[data-site-footer]");
+if (footer) footer.innerHTML = `<footer class="site-footer"><div class="footer-main"><div class="footer-brand"><a class="brand" href="index.html"><span class="brand__mark">AHD</span><span class="brand__name">Albarika<span class="brand__sub">CLOTH & TAILORING</span></span></a><p>Fine cloth, thoughtful tailoring, and a fit made around you.</p></div><div class="footer-col"><h2>EXPLORE</h2><a href="shop.html">Shop fabrics</a><a href="services.html">Tailoring</a><a href="portfolio.html">Our work</a><a href="gallery.html">Fabric gallery</a></div><div class="footer-col"><h2>GET IN TOUCH</h2><a href="about.html">About Albarika</a><a href="contact.html">Contact us</a><a href="login.html">Sign in</a></div></div><div class="footer-bottom"><span>© ${new Date().getFullYear()} Albarika Home of Designs</span><span>Cloth · craft · fit.</span></div></footer>`;
+
+async function renderHome() {
+  try {
+    const [settings, projects, products] = await Promise.all([
+      getSettings(), getPublished("portfolio_projects", "id,title,description,location,cover_path,created_at"), getProducts()
+    ]);
+    const title = document.querySelector("[data-hero-title]");
+    const description = document.querySelector("[data-hero-description]");
+    if (title && settings.hero_heading) title.innerHTML = escapeHtml(settings.hero_heading).replace(/\n/g, "<br>");
+    if (description && settings.hero_description) description.textContent = settings.hero_description;
+    if (settings.hero_image_path) document.querySelector("[data-hero-image]").src = await mediaUrl(settings.hero_image_path);
+    const projectGrid = document.querySelector("[data-project-grid]");
+    if (projectGrid) projectGrid.innerHTML = projects.length ? (await Promise.all(projects.slice(0, 2).map(async (item) => `<a class="project-card" href="portfolio.html"><img class="project-card__image" src="${escapeHtml(await mediaUrl(item.cover_path))}" alt="${escapeHtml(item.title)}" loading="lazy"><div class="project-card__meta"><div><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.location ?? "")}</p></div><span aria-hidden="true">↗</span></div></a>`))).join("") : `<p class="loading-line">Our project stories are taking shape. Check back soon.</p>`;
+    const productGrid = document.querySelector("[data-featured-products]");
+    if (productGrid) productGrid.innerHTML = products.length ? (await Promise.all(products.slice(0, 2).map(productCard))).join("") : `<p class="loading-line">The collection is being thoughtfully assembled. Check back soon.</p>`;
+  } catch (error) {
+    const message = /invalid api key/i.test(error?.message ?? "")
+      ? "Supabase rejected the anon key. Replace it with the project's valid anon/public key in js/config.js."
+      : /PGRST205|schema cache|could not find the table/i.test(`${error?.code ?? ""} ${error?.message ?? ""}`)
+        ? "The Albarika catalog schema is not installed in this Supabase project yet. Apply the migration in supabase/migrations."
+        : "The Albarika catalog is unavailable. Check the Supabase connection and migration status.";
+    if (supabase) notify(message, "error");
+    document.querySelectorAll(".loading-line").forEach((el) => { el.textContent = message; });
+  }
+}
+
+async function productCard(product) {
+  const unit = product.unit === "metre" ? "per metre" : product.unit === "yard" ? "per yard" : "per piece";
+  const media = await mediaUrl(product.cover_path);
+  const isVideo = /\.(mp4|webm|mov|ogv)$/i.test(product.cover_path ?? "");
+  return `<article class="product-card"><a href="product-details.html?slug=${encodeURIComponent(product.slug)}"><div class="product-card__image-wrap">${isVideo ? `<div class="product-card__video-wrap"><video src="${escapeHtml(media)}" muted loop playsinline preload="none"></video></div>` : `<img class="product-card__image" src="${escapeHtml(media)}" alt="${escapeHtml(product.title)}" loading="lazy">`}<span class="product-card__quick">View fabric</span></div><h3>${escapeHtml(product.title)}</h3><p class="product-card__price">${product.price == null ? "Enquire for price" : `${money(product.price, product.currency ?? "NGN")} ${unit}`}</p></a></article>`;
+}
+
+const cartCount = document.querySelector("[data-cart-count]");
+if (cartCount) cartCount.textContent = String(JSON.parse(localStorage.getItem("ahd-cart") || "[]").reduce((sum, row) => sum + row.quantity, 0));
+if (page === "home" && supabase) renderHome();
+if (page === "home" && !supabase) document.querySelectorAll(".loading-line").forEach((el) => { el.textContent = SUPABASE_CONFIG_ERROR || "The fabric collection will appear here when it is published."; });
+
+const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add("is-visible"); observer.unobserve(entry.target); } }), { threshold: .12 });
+document.querySelectorAll(".content-section,.intro-section,.feature-band,.shop-band,.closing-note").forEach((section) => { section.classList.add("reveal"); observer.observe(section); });
+
+// Video hover play/pause on product cards (handles dynamically loaded cards)
+function attachVideoHover(card) {
+  const video = card.querySelector("video");
+  if (!video) return;
+  card.addEventListener("mouseenter", () => { video.play().catch(() => {}); });
+  card.addEventListener("mouseleave", () => { video.pause(); video.currentTime = 0; });
+}
+document.querySelectorAll(".product-card").forEach(attachVideoHover);
+const cardObserver = new MutationObserver((mutations) => {
+  mutations.forEach((m) => m.addedNodes.forEach((node) => { if (node.nodeType === 1 && node.matches(".product-card")) attachVideoHover(node); if (node.nodeType === 1) node.querySelectorAll?.(".product-card").forEach(attachVideoHover); }));
+});
+document.querySelectorAll("[data-page-content]").forEach((el) => cardObserver.observe(el, { childList: true }));
