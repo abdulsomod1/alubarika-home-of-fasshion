@@ -2,12 +2,26 @@ import { supabase } from "./supabase.js";
 import { SUPABASE_CONFIG_ERROR } from "./config.js";
 import { getPublished, getProducts, getSettings, mediaUrl } from "./data.js";
 import { escapeHtml, money, notify } from "./utils.js";
+import { onAuthChange, isSignedIn } from "./session.js";
 
 const page = document.body.dataset.page;
 const navItems = [["Fabrics", "shop.html"], ["Tailoring", "services.html"], ["Our work", "portfolio.html"], ["Gallery", "gallery.html"], ["About", "about.html"], ["Contact", "contact.html"]];
+
+async function buildAuthLink() {
+  return supabase && (await isSignedIn())
+    ? `<a class="header-action-link" href="#" data-sign-out-nav>Sign out</a>`
+    : `<a class="header-action-link" href="login.html">Sign in</a>`;
+}
+
+async function updateHeaderAuth(header) {
+  const authSlot = header.querySelector("[data-auth-slot]");
+  if (authSlot) authSlot.innerHTML = await buildAuthLink();
+}
+
 const header = document.querySelector("[data-site-header]");
 if (header) {
-  header.innerHTML = `<header class="site-header"><a class="brand" href="index.html" aria-label="Albarika Home of Designs home"><img class="brand__mark" src="assets/images/logo.png" alt="Albarika logo" width="42" height="42"><span class="brand__name">Albarika<span class="brand__sub">CLOTH & TAILORING</span></span></a><button class="menu-toggle" type="button" aria-expanded="false" aria-label="Open menu"><span></span><span></span></button><nav class="primary-nav" aria-label="Main navigation">${navItems.map(([label, href]) => `<a href="${href}"${location.pathname.endsWith(href) ? ' aria-current="page"' : ""}>${label}</a>`).join("")}</nav><div class="header-actions"><a class="login-shortcut" href="account.html">Account</a><a class="cart-link" href="cart.html" aria-label="Shopping bag">Bag <span class="cart-count" data-cart-count>0</span></a></div></header>`;
+  const authLink = await buildAuthLink();
+  header.innerHTML = `<header class="site-header"><a class="brand" href="index.html" aria-label="Albarika Home of Designs home"><img class="brand__mark" src="assets/images/logo.png" alt="Albarika logo" width="42" height="42"><span class="brand__name">Albarika<span class="brand__sub">CLOTH & TAILORING</span></span></a><button class="menu-toggle" type="button" aria-expanded="false" aria-label="Open menu"><span></span><span></span></button><nav class="primary-nav" aria-label="Main navigation">${navItems.map(([label, href]) => `<a href="${href}"${location.pathname.endsWith(href) ? ' aria-current="page"' : ""}>${label}</a>`).join("")}</nav><div class="header-actions"><span data-auth-slot>${authLink}</span><a class="cart-link" href="cart.html" aria-label="Shopping bag">Bag <span class="cart-count" data-cart-count>0</span></a></div></header>`;
   const menuButton = header.querySelector(".menu-toggle");
   menuButton.addEventListener("click", () => {
     const nav = header.querySelector(".primary-nav");
@@ -16,9 +30,37 @@ if (header) {
     menuButton.setAttribute("aria-label", open ? "Open menu" : "Close menu");
     nav.classList.toggle("is-open", !open);
   });
+
+  // Sign out from nav — delegated on the header so it works after re-renders
+  header.addEventListener("click", async (e) => {
+    if (e.target.matches("[data-sign-out-nav]")) {
+      e.preventDefault();
+      if (supabase) await supabase.auth.signOut();
+      location.href = "index.html";
+    }
+  });
+
+  // React to auth state changes
+  onAuthChange(() => updateHeaderAuth(header));
 }
+
 const footer = document.querySelector("[data-site-footer]");
-if (footer) footer.innerHTML = `<footer class="site-footer"><div class="footer-main"><div class="footer-brand"><a class="brand" href="index.html"><img class="brand__mark" src="assets/images/logo.png" alt="Albarika logo" width="42" height="42"><span class="brand__name">Albarika<span class="brand__sub">CLOTH & TAILORING</span></span></a><p>Fine cloth, thoughtful tailoring, and a fit made around you.</p></div><div class="footer-col"><h2>EXPLORE</h2><a href="shop.html">Shop fabrics</a><a href="services.html">Tailoring</a><a href="portfolio.html">Our work</a><a href="gallery.html">Fabric gallery</a></div><div class="footer-col"><h2>GET IN TOUCH</h2><a href="about.html">About Albarika</a><a href="contact.html">Contact us</a><a href="login.html">Sign in</a></div></div><div class="footer-bottom"><span>© ${new Date().getFullYear()} Albarika Home of Designs</span><span>Cloth · craft · fit.</span></div></footer>`;
+if (footer) {
+  supabase?.auth.getUser().then(({ data }) => {
+    const authText = data?.user
+      ? `<a href="account.html">Your account</a><button class="footer-signout" type="button" data-sign-out-footer>Sign out</button>`
+      : `<a href="login.html">Sign in</a>`;
+    footer.innerHTML = `<footer class="site-footer"><div class="footer-main"><div class="footer-brand"><a class="brand" href="index.html"><img class="brand__mark" src="assets/images/logo.png" alt="Albarika logo" width="42" height="42"><span class="brand__name">Albarika<span class="brand__sub">CLOTH & TAILORING</span></span></a><p>Fine cloth, thoughtful tailoring, and a fit made around you.</p></div><div class="footer-col"><h2>EXPLORE</h2><a href="shop.html">Shop fabrics</a><a href="services.html">Tailoring</a><a href="portfolio.html">Our work</a><a href="gallery.html">Fabric gallery</a></div><div class="footer-col"><h2>GET IN TOUCH</h2>${authText}</div></div><div class="footer-bottom"><span>© ${new Date().getFullYear()} Albarika Home of Designs</span><span>Cloth · craft · fit.</span></div></footer>`;
+    footer.querySelector("[data-sign-out-footer]")?.addEventListener("click", async () => { if (supabase) await supabase.auth.signOut(); location.href = "index.html"; });
+  });
+
+  // React to auth state changes in footer
+  onAuthChange((event) => {
+    if (event === "SIGNED_OUT" && footer) {
+      footer.innerHTML = `<footer class="site-footer"><div class="footer-main"><div class="footer-brand"><a class="brand" href="index.html"><img class="brand__mark" src="assets/images/logo.png" alt="Albarika logo" width="42" height="42"><span class="brand__name">Albarika<span class="brand__sub">CLOTH & TAILORING</span></span></a><p>Fine cloth, thoughtful tailoring, and a fit made around you.</p></div><div class="footer-col"><h2>EXPLORE</h2><a href="shop.html">Shop fabrics</a><a href="services.html">Tailoring</a><a href="portfolio.html">Our work</a><a href="gallery.html">Fabric gallery</a></div><div class="footer-col"><h2>GET IN TOUCH</h2><a href="login.html">Sign in</a></div></div><div class="footer-bottom"><span>© ${new Date().getFullYear()} Albarika Home of Designs</span><span>Cloth · craft · fit.</span></div></footer>`;
+    }
+  });
+}
 
 async function renderHome() {
   try {

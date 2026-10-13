@@ -14,7 +14,7 @@
   .primary-nav a { padding: 13px 0; border-bottom: 1px solid #ffffff18; white-space: nowrap; }
   .primary-nav a:after { display: none; }
   .header-actions { gap: 14px; }
-  .header-actions .login-shortcut { display: none; }
+  .header-actions .header-action-link { display: none; }
   .brand { min-width: 0; }
   .hero { min-height: 680px; }
   .hero__content { width: min(650px, 80%); margin-left: 8vw; }
@@ -141,11 +141,33 @@
   .dashboard-nav .nav-divider { display: none; }
   .dashboard-nav .nav-exit { width: 100%; text-align: center; border-top: 1px solid #1e1e1e; margin-top: 8px; padding-top: 16px; }
   .dashboard-toggle {
-    display: flex; position: fixed; bottom: 20px; right: 20px;
-    width: 48px; height: 48px; border-radius: 50%;
-    background: #c5a572; color: #0c0c0c; border: none; cursor: pointer;
-    align-items: center; justify-content: center; z-index: 995;
-    box-shadow: 0 4px 16px rgba(0,0,0,.4);
+    display: flex; position: fixed; bottom: 24px; right: 24px;
+    width: 50px; height: 50px; border-radius: 50%;
+    background: #171714; color: #f7f5ef; border: 1.5px solid rgba(247,245,239,.15);
+    cursor: pointer; align-items: center; justify-content: center; z-index: 995;
+    box-shadow: 0 6px 24px rgba(0,0,0,.55), 0 2px 6px rgba(0,0,0,.35);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .dashboard-toggle:hover { transform: scale(1.07); }
+  .dashboard-toggle:active { transform: scale(.95); }
+  .dashboard-toggle .icon-hamburger {
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  .dashboard-toggle .icon-hamburger span {
+    display: block; height: 1.5px; background: currentColor; border-radius: 2px;
+    transition: transform .22s ease, opacity .22s ease, width .22s ease;
+  }
+  .dashboard-toggle .icon-hamburger span:nth-child(1) { width: 18px; }
+  .dashboard-toggle .icon-hamburger span:nth-child(2) { width: 22px; }
+  .dashboard-toggle .icon-hamburger span:nth-child(3) { width: 14px; }
+  .dashboard-toggle[aria-expanded="true"] .icon-hamburger span:nth-child(1) {
+    transform: translateY(6.5px) rotate(45deg); width: 20px;
+  }
+  .dashboard-toggle[aria-expanded="true"] .icon-hamburger span:nth-child(2) {
+    opacity: 0; transform: scaleX(0);
+  }
+  .dashboard-toggle[aria-expanded="true"] .icon-hamburger span:nth-child(3) {
+    transform: translateY(-6.5px) rotate(-45deg); width: 20px;
   }
   .dashboard-main { padding: 30px 16px 100px; margin-top: 68px; }
   .dashboard-hero { flex-direction: column; gap: 12px; align-items: flex-start; padding: 22px 18px; }

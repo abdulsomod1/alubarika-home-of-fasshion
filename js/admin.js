@@ -16,6 +16,7 @@ document.querySelector("[data-dashboard-toggle]")?.addEventListener("click", () 
   const btn = document.querySelector("[data-dashboard-toggle]");
   const open = btn?.getAttribute("aria-expanded") === "true";
   nav?.classList.toggle("is-open", !open);
+  btn?.classList.toggle("is-open", !open);
   btn?.setAttribute("aria-expanded", String(!open));
   btn?.setAttribute("aria-label", open ? "Open navigation" : "Close navigation");
 });
