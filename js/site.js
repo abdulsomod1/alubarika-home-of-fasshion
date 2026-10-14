@@ -43,6 +43,12 @@ if (header) {
     <div id="nav-backdrop" class="nav-backdrop" aria-hidden="true"></div>
     <nav id="nav-drawer" class="nav-drawer" aria-label="Mobile navigation" aria-hidden="true">
       <div class="nav-drawer__inner">
+        <div class="nav-drawer__head">
+          <a class="brand" href="index.html" aria-label="Albarika home">
+            <img class="brand__mark" src="assets/images/logo.png" alt="Albarika logo" width="40" height="40">
+            <span class="brand__name">Albarika<span class="brand__sub">CLOTH &amp; TAILORING</span></span>
+          </a>
+        </div>
         <div class="nav-drawer__links">
           ${navItems.map(([label, href]) => `<a href="${href}"${location.pathname.endsWith(href) ? ' aria-current="page"' : ""}>${label}</a>`).join("")}
         </div>
