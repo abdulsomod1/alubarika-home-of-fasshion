@@ -21,17 +21,85 @@ async function updateHeaderAuth(header) {
 const header = document.querySelector("[data-site-header]");
 if (header) {
   const authLink = await buildAuthLink();
-  header.innerHTML = `<header class="site-header"><a class="brand" href="index.html" aria-label="Albarika Home of Designs home"><img class="brand__mark" src="assets/images/logo.png" alt="Albarika logo" width="42" height="42"><span class="brand__name">Albarika<span class="brand__sub">CLOTH & TAILORING</span></span></a><button class="menu-toggle" type="button" aria-expanded="false" aria-label="Open menu"><span></span><span></span></button><nav class="primary-nav" aria-label="Main navigation">${navItems.map(([label, href]) => `<a href="${href}"${location.pathname.endsWith(href) ? ' aria-current="page"' : ""}>${label}</a>`).join("")}</nav><div class="header-actions"><span data-auth-slot>${authLink}</span><a class="cart-link" href="cart.html" aria-label="Shopping bag">Bag <span class="cart-count" data-cart-count>0</span></a></div></header>`;
+  header.innerHTML = `
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="Albarika Home of Designs home">
+        <img class="brand__mark" src="assets/images/logo.png" alt="Albarika logo" width="42" height="42">
+        <span class="brand__name">Albarika<span class="brand__sub">CLOTH &amp; TAILORING</span></span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav-drawer" aria-label="Open navigation">
+        <span class="menu-toggle__bar"></span>
+        <span class="menu-toggle__bar"></span>
+        <span class="menu-toggle__bar"></span>
+      </button>
+      <nav class="primary-nav" aria-label="Main navigation">
+        ${navItems.map(([label, href]) => `<a href="${href}"${location.pathname.endsWith(href) ? ' aria-current="page"' : ""}>${label}</a>`).join("")}
+      </nav>
+      <div class="header-actions">
+        <span data-auth-slot>${authLink}</span>
+        <a class="cart-link" href="cart.html" aria-label="Shopping bag">Bag <span class="cart-count" data-cart-count>0</span></a>
+      </div>
+    </header>
+    <div class="nav-backdrop" aria-hidden="true"></div>
+    <nav id="nav-drawer" class="nav-drawer" aria-label="Mobile navigation" aria-hidden="true">
+      <div class="nav-drawer__inner">
+        <div class="nav-drawer__links">
+          ${navItems.map(([label, href]) => `<a href="${href}"${location.pathname.endsWith(href) ? ' aria-current="page"' : ""}>${label}</a>`).join("")}
+        </div>
+        <div class="nav-drawer__actions">
+          <span data-auth-slot>${authLink}</span>
+          <a class="cart-link" href="cart.html" aria-label="Shopping bag">Bag <span class="cart-count" data-cart-count>0</span></a>
+        </div>
+      </div>
+    </nav>`;
+
+  // ── Drawer state management ──────────────────────────────────────────────
+  const drawer = header.querySelector(".nav-drawer");
+  const backdrop = header.querySelector(".nav-backdrop");
   const menuButton = header.querySelector(".menu-toggle");
+  const navLinks = drawer.querySelectorAll("a");
+
+  function closeMenu() {
+    menuButton.setAttribute("aria-expanded", "false");
+    menuButton.setAttribute("aria-label", "Open navigation");
+    drawer.classList.remove("is-open");
+    backdrop.classList.remove("is-visible");
+    document.body.classList.remove("is-nav-open");
+    menuButton.focus();
+  }
+
+  function openMenu() {
+    menuButton.setAttribute("aria-expanded", "true");
+    menuButton.setAttribute("aria-label", "Close navigation");
+    drawer.classList.add("is-open");
+    backdrop.classList.add("is-visible");
+    document.body.classList.add("is-nav-open");
+    drawer.setAttribute("aria-hidden", "false");
+    drawer.querySelector("a")?.focus();
+  }
+
   menuButton.addEventListener("click", () => {
-    const nav = header.querySelector(".primary-nav");
-    const open = menuButton.getAttribute("aria-expanded") === "true";
-    menuButton.setAttribute("aria-expanded", String(!open));
-    menuButton.setAttribute("aria-label", open ? "Open menu" : "Close menu");
-    nav.classList.toggle("is-open", !open);
+    const isOpen = menuButton.getAttribute("aria-expanded") === "true";
+    isOpen ? closeMenu() : openMenu();
   });
 
-  // Sign out from nav — delegated on the header so it works after re-renders
+  // Close on Escape
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && drawer.classList.contains("is-open")) closeMenu();
+  });
+
+  // Close on backdrop click
+  backdrop.addEventListener("click", closeMenu);
+
+  // Close when a nav link is activated (navigates to a new page)
+  navLinks.forEach((link) => link.addEventListener("click", closeMenu));
+
+  // Close on focus-trap breach: Tab outside drawer closes it
+  drawer.addEventListener("keydown", (e) => {
+    if (e.key === "Tab" && !drawer.contains(e.relatedTarget)) closeMenu();
+  });
+
+  // Sign out — delegated on the header so it works after re-renders
   header.addEventListener("click", async (e) => {
     if (e.target.matches("[data-sign-out-nav]")) {
       e.preventDefault();
