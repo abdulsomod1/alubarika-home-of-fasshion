@@ -8,6 +8,15 @@ const status = document.querySelector("[data-staff-status]");
 const signout = document.querySelector("[data-signout]");
 
 if (signout) signout.addEventListener("click", async () => { await supabase?.auth.signOut(); location.href = "../index.html"; });
+document.querySelector("[data-dashboard-toggle]")?.addEventListener("click", () => {
+  const nav = document.querySelector(".dashboard-nav");
+  const btn = document.querySelector("[data-dashboard-toggle]");
+  const open = btn?.getAttribute("aria-expanded") === "true";
+  nav?.classList.toggle("is-open", !open);
+  btn?.classList.toggle("is-open", !open);
+  btn?.setAttribute("aria-expanded", String(!open));
+  btn?.setAttribute("aria-label", open ? "Open navigation" : "Close navigation");
+});
 
 if (!supabase) setStatus(SUPABASE_CONFIG_ERROR || "Configure the Supabase public URL and anon key to connect the studio workspace.");
 else authorize();

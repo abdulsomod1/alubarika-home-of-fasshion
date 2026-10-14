@@ -18,6 +18,136 @@
   .site-footer { padding-right: 48px; padding-left: 48px; }
   .form-shell { margin-top: 32px; margin-bottom: 64px; }
   .dashboard-status { font-size: 11px; }
+
+  /* Admin dashboard: sidebar → right-side hamburger drawer */
+  .dashboard { display: block; }
+  .dashboard-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 56px;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    background: #252521;
+    border-bottom: 1px solid rgba(255,255,255,.07);
+    z-index: 1000;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .dashboard-nav .brand {
+    margin: 0;
+    gap: 10px;
+  }
+  .dashboard-nav .brand__mark { width: 32px; height: 32px; }
+  .dashboard-nav .brand__name { font-size: 14px; color: #f7f5ef; }
+  .dashboard-nav .brand__sub { display: none; }
+  /* Nav drawer — slides from RIGHT, hidden by default */
+  .dashboard-nav nav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(300px, 85vw);
+    background: #252521;
+    padding: 72px 18px 40px;
+    overflow-y: auto;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 999;
+    transform: translateX(100%);
+    transition: transform .32s cubic-bezier(.2, .75, .25, 1);
+    border-left: 1px solid rgba(255,255,255,.07);
+  }
+  .dashboard-nav.is-open nav {
+    transform: translateX(0);
+  }
+  .dashboard-nav nav a {
+    display: block;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: #d3d0c8;
+    border-radius: 8px;
+    text-decoration: none;
+  }
+  .dashboard-nav nav a:hover,
+  .dashboard-nav nav a.is-active {
+    background: rgba(255,255,255,.1);
+    color: #fff;
+  }
+  .dashboard-nav nav a.is-active { font-weight: 600; }
+  .dashboard-nav > a:not(.brand) { display: none; }
+  /* Dashboard backdrop overlay */
+  .dashboard-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 998;
+    background: rgba(23,23,20,.55);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s ease;
+  }
+  .dashboard-backdrop.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .dashboard-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 8px;
+    color: #f7f5ef;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .dashboard-toggle:hover { background: rgba(255,255,255,.08); }
+  .dashboard-toggle .icon-hamburger {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .dashboard-toggle .icon-hamburger span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
+    transition: transform .22s ease, opacity .22s ease;
+  }
+  .dashboard-toggle .icon-hamburger span:nth-child(1) { width: 16px; }
+  .dashboard-toggle .icon-hamburger span:nth-child(2) { width: 22px; }
+  .dashboard-toggle .icon-hamburger span:nth-child(3) { width: 14px; }
+  /* Hamburger → X when nav is open */
+  .dashboard-toggle[aria-expanded="true"] .icon-hamburger span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+    width: 20px;
+  }
+  .dashboard-toggle[aria-expanded="true"] .icon-hamburger span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  .dashboard-toggle[aria-expanded="true"] .icon-hamburger span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+    width: 20px;
+  }
+  .dashboard-main {
+    padding: 76px 18px 50px;
+    min-height: 100vh;
+  }
+  .dashboard-top { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .dashboard-top h1 { font-size: 34px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 20px 0; }
+  .dashboard-panel { margin-top: 20px; padding: 18px 15px; }
+  .management-tools { flex-direction: column; gap: 8px; }
+  .management-tools input, .management-tools select { width: 100%; }
   /* Nav drawer uses top:var(--header-h) — no extra padding needed */
 }
 /* ── 600px breakpoint (phones) ───────────────────────────────── */

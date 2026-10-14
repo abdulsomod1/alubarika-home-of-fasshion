@@ -17,14 +17,61 @@ let rows = [];
 if (!supabase) setStatus(SUPABASE_CONFIG_ERROR || "Configure Supabase before using management tools.");
 else authorize().then(() => load()).catch((error) => setStatus(error.message));
 document.querySelector("[data-signout]")?.addEventListener("click", async () => { await supabase?.auth.signOut(); location.href = "../index.html"; });
+
+// Create backdrop element for mobile nav drawer
+let backdrop = document.getElementById("dashboard-backdrop");
+if (!backdrop) {
+  backdrop = document.createElement("div");
+  backdrop.id = "dashboard-backdrop";
+  backdrop.className = "dashboard-backdrop";
+  document.body.appendChild(backdrop);
+}
+
+function closeDashboardNav() {
+  const nav = document.querySelector(".dashboard-nav");
+  const btn = document.querySelector("[data-dashboard-toggle]");
+  if (nav && btn) {
+    nav.classList.remove("is-open");
+    btn.classList.remove("is-open");
+    btn.setAttribute("aria-expanded", "false");
+    btn.setAttribute("aria-label", "Open navigation");
+    backdrop?.classList.remove("is-visible");
+    document.body.classList.remove("is-nav-open");
+  }
+}
+
+function openDashboardNav() {
+  const nav = document.querySelector(".dashboard-nav");
+  const btn = document.querySelector("[data-dashboard-toggle]");
+  if (nav && btn) {
+    nav.classList.add("is-open");
+    btn.classList.add("is-open");
+    btn.setAttribute("aria-expanded", "true");
+    btn.setAttribute("aria-label", "Close navigation");
+    backdrop?.classList.add("is-visible");
+    document.body.classList.add("is-nav-open");
+  }
+}
+
 document.querySelector("[data-dashboard-toggle]")?.addEventListener("click", () => {
   const nav = document.querySelector(".dashboard-nav");
   const btn = document.querySelector("[data-dashboard-toggle]");
-  const open = btn?.getAttribute("aria-expanded") === "true";
-  nav?.classList.toggle("is-open", !open);
-  btn?.classList.toggle("is-open", !open);
-  btn?.setAttribute("aria-expanded", String(!open));
-  btn?.setAttribute("aria-label", open ? "Open navigation" : "Close navigation");
+  const isOpen = btn?.getAttribute("aria-expanded") === "true";
+  if (isOpen) closeDashboardNav();
+  else openDashboardNav();
+});
+
+// Close nav when clicking on backdrop
+backdrop?.addEventListener("click", closeDashboardNav);
+
+// Close nav on Escape key
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeDashboardNav();
+});
+
+// Close nav when clicking on nav links
+document.querySelectorAll(".dashboard-nav nav a").forEach(link => {
+  link.addEventListener("click", closeDashboardNav);
 });
 document.querySelector("[data-search]")?.addEventListener("input", render);
 document.querySelector("[data-role-filter]")?.addEventListener("change", render);
