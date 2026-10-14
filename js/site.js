@@ -40,7 +40,7 @@ if (header) {
         <a class="cart-link" href="cart.html" aria-label="Shopping bag">Bag <span class="cart-count" data-cart-count>0</span></a>
       </div>
     </header>
-    <div class="nav-backdrop" aria-hidden="true"></div>
+    <div id="nav-backdrop" class="nav-backdrop" aria-hidden="true"></div>
     <nav id="nav-drawer" class="nav-drawer" aria-label="Mobile navigation" aria-hidden="true">
       <div class="nav-drawer__inner">
         <div class="nav-drawer__links">
@@ -54,15 +54,16 @@ if (header) {
     </nav>`;
 
   // ── Drawer state management ──────────────────────────────────────────────
-  const drawer = header.querySelector(".nav-drawer");
-  const backdrop = header.querySelector(".nav-backdrop");
+  const drawer = document.getElementById("nav-drawer");
+  const backdrop = document.getElementById("nav-backdrop");
   const menuButton = header.querySelector(".menu-toggle");
-  const navLinks = drawer.querySelectorAll("a");
+  const drawerLinks = drawer.querySelectorAll(".nav-drawer__links a");
 
   function closeMenu() {
     menuButton.setAttribute("aria-expanded", "false");
     menuButton.setAttribute("aria-label", "Open navigation");
     drawer.classList.remove("is-open");
+    drawer.setAttribute("aria-hidden", "true");
     backdrop.classList.remove("is-visible");
     document.body.classList.remove("is-nav-open");
     menuButton.focus();
@@ -92,7 +93,7 @@ if (header) {
   backdrop.addEventListener("click", closeMenu);
 
   // Close when a nav link is activated (navigates to a new page)
-  navLinks.forEach((link) => link.addEventListener("click", closeMenu));
+  drawerLinks.forEach((link) => link.addEventListener("click", closeMenu));
 
   // Close on focus-trap breach: Tab outside drawer closes it
   drawer.addEventListener("keydown", (e) => {

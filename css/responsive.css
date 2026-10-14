@@ -397,10 +397,10 @@
 @media(max-width:860px){.shop-band{grid-template-columns:1fr;gap:30px}}
 
 /* ── SHOP PAGE HEADER ── */
-.content-page__head{margin-bottom:40px;padding-top:56px}
+.content-page__head{margin-bottom:40px;padding-top:88px}
 .content-page__head h1{margin:10px 0 14px}
 .content-page__head>p{max-width:440px;color:var(--ink-soft);font-size:15px;line-height:1.65}
-@media(max-width:600px){.content-page__head{padding-top:38px;margin-bottom:28px}.content-page__head h1{margin:8px 0 12px}}
+@media(max-width:600px){.content-page__head{padding-top:calc(var(--header-h) + 8px);margin-bottom:28px}.content-page__head h1{margin:8px 0 12px}}
 
 /* ── SERVICE / MEDIA CARDS ── */
 .service-card{padding:30px 26px;background:#eeebe3;border:1px solid #dedad0;border-radius:3px}
