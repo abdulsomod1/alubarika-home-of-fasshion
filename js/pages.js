@@ -12,7 +12,9 @@ if (root && ["shop", "portfolio", "gallery", "videos", "services", "product"].in
     ? "Supabase rejected the anon key. Replace it with the current project anon/public key in js/config.js."
     : /PGRST205|schema cache|could not find the table/i.test(`${error?.code ?? ""} ${error?.message ?? ""}`)
       ? "The Albarika catalogue schema is not installed yet. Apply the Supabase migration first."
-      : "The published catalogue could not be loaded. Check the Supabase connection and migration status.";
+      : /rls|permission\s*denied|permission_error|violates\s*row\s*level\s*security|privileges|no\s*perm/i.test(`${error?.code ?? ""} ${error?.message ?? ""}`)
+        ? "The published catalogue is not publicly accessible. Add a public RLS policy to the products table in Supabase."
+        : "The published catalogue could not be loaded. Check the Supabase connection and migration status.";
   root.innerHTML = `<div class="empty-state"><h2>Catalogue unavailable</h2><p>${escapeHtml(message)}</p></div>`;
 });
 

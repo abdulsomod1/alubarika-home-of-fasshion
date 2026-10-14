@@ -156,7 +156,9 @@ async function renderHome() {
       ? "Supabase rejected the anon key. Replace it with the project's valid anon/public key in js/config.js."
       : /PGRST205|schema cache|could not find the table/i.test(`${error?.code ?? ""} ${error?.message ?? ""}`)
         ? "The Albarika catalog schema is not installed in this Supabase project yet. Apply the migration in supabase/migrations."
-        : "The Albarika catalog is unavailable. Check the Supabase connection and migration status.";
+        : /rls|permission\s*denied|permission_error|violates\s*row\s*level\s*security|privileges|no\s*perm/i.test(`${error?.code ?? ""} ${error?.message ?? ""}`)
+          ? "The published catalogue is not publicly accessible. Add a public RLS policy to the products table in Supabase."
+          : "The Albarika catalog is unavailable. Check the Supabase connection and migration status.";
     if (supabase) notify(message, "error");
     document.querySelectorAll(".loading-line").forEach((el) => { el.textContent = message; });
   }
