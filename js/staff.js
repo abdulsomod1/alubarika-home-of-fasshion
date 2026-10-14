@@ -8,15 +8,53 @@ const status = document.querySelector("[data-staff-status]");
 const signout = document.querySelector("[data-signout]");
 
 if (signout) signout.addEventListener("click", async () => { await supabase?.auth.signOut(); location.href = "../index.html"; });
-document.querySelector("[data-dashboard-toggle]")?.addEventListener("click", () => {
+// Mobile nav: backdrop + toggle + close handlers
+function ensureBackdrop() {
+  if (document.getElementById("dashboard-backdrop")) return;
+  const el = document.createElement("div");
+  el.id = "dashboard-backdrop";
+  el.className = "dashboard-backdrop";
+  document.body.appendChild(el);
+}
+
+function closeDashboardNav() {
   const nav = document.querySelector(".dashboard-nav");
   const btn = document.querySelector("[data-dashboard-toggle]");
-  const open = btn?.getAttribute("aria-expanded") === "true";
-  nav?.classList.toggle("is-open", !open);
-  btn?.classList.toggle("is-open", !open);
-  btn?.setAttribute("aria-expanded", String(!open));
-  btn?.setAttribute("aria-label", open ? "Open navigation" : "Close navigation");
+  if (nav && btn) {
+    nav.classList.remove("is-open");
+    btn.classList.remove("is-open");
+    btn.setAttribute("aria-expanded", "false");
+    btn.setAttribute("aria-label", "Open navigation");
+    document.getElementById("dashboard-backdrop")?.classList.remove("is-visible");
+    document.body.classList.remove("is-nav-open");
+  }
+}
+
+function openDashboardNav() {
+  const nav = document.querySelector(".dashboard-nav");
+  const btn = document.querySelector("[data-dashboard-toggle]");
+  if (nav && btn) {
+    nav.classList.add("is-open");
+    btn.classList.add("is-open");
+    btn.setAttribute("aria-expanded", "true");
+    btn.setAttribute("aria-label", "Close navigation");
+    document.getElementById("dashboard-backdrop")?.classList.add("is-visible");
+    document.body.classList.add("is-nav-open");
+  }
+}
+
+ensureBackdrop();
+
+document.querySelector("[data-dashboard-toggle]")?.addEventListener("click", () => {
+  const btn = document.querySelector("[data-dashboard-toggle]");
+  const isOpen = btn?.getAttribute("aria-expanded") === "true";
+  if (isOpen) closeDashboardNav();
+  else openDashboardNav();
 });
+
+document.getElementById("dashboard-backdrop")?.addEventListener("click", closeDashboardNav);
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDashboardNav(); });
+document.querySelectorAll(".dashboard-nav nav a").forEach(link => link.addEventListener("click", closeDashboardNav));
 
 if (!supabase) setStatus(SUPABASE_CONFIG_ERROR || "Configure the Supabase public URL and anon key to connect the studio workspace.");
 else authorize();
