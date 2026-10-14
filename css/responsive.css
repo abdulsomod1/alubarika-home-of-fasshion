@@ -18,8 +18,7 @@
   .site-footer { padding-right: 48px; padding-left: 48px; }
   .form-shell { margin-top: 32px; margin-bottom: 64px; }
   .dashboard-status { font-size: 11px; }
-  /* Nav drawer starts below the fixed header */
-  .nav-drawer { padding-top: 76px; }
+  /* Nav drawer uses top:var(--header-h) — no extra padding needed */
 }
 /* ── 600px breakpoint (phones) ───────────────────────────────── */
 @media (max-width: 600px) {
@@ -39,8 +38,7 @@
   .menu-toggle__bar:nth-child(3) { width: 13px; }
   .menu-toggle[aria-expanded="true"] .menu-toggle__bar:nth-child(1) { transform: translateY(5.5px) rotate(45deg); width: 19px; }
   .menu-toggle[aria-expanded="true"] .menu-toggle__bar:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); width: 19px; }
-  /* Nav drawer starts below the fixed header */
-  .nav-drawer { padding-top: 68px; }
+  /* Nav drawer uses top:var(--header-h) — no extra padding needed */
 
   /* Hero */
   .hero {
