@@ -170,6 +170,10 @@
   .menu-toggle[aria-expanded="true"] .menu-toggle__bar:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); width: 19px; }
   /* Nav drawer uses top:var(--header-h) — no extra padding needed */
 
+  /* Admin dashboard: sync admin nav height with --header-h and push content below it */
+  .dashboard-nav { height: var(--header-h); }
+  .dashboard-main { padding-top: calc(var(--header-h) + 18px); min-height: 100dvh; }
+
   /* Hero */
   .hero {
     min-height: min(690px, 92svh); max-height: 820px; align-items: center;
