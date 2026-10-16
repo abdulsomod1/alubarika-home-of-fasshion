@@ -57,12 +57,14 @@
     flex-direction: column;
     gap: 4px;
     z-index: 999;
-    transform: translateX(100%);
-    transition: transform .32s cubic-bezier(.2, .75, .25, 1);
+    display: none;
+    opacity: 0;
+    transition: opacity .28s ease;
     border-left: 1px solid rgba(255,255,255,.07);
   }
   .dashboard-nav.is-open nav {
-    transform: translateX(0);
+    display: block;
+    opacity: 1;
   }
   .dashboard-nav nav a {
     display: block;
@@ -170,9 +172,11 @@
   .menu-toggle[aria-expanded="true"] .menu-toggle__bar:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); width: 19px; }
   /* Nav drawer uses top:var(--header-h) — no extra padding needed */
 
-  /* Admin dashboard: sync admin nav height with --header-h and push content below it */
+  /* Admin dashboard: full override of the 900px .dashboard-main padding
+     (shorthand 'padding' beats longhand 'padding-top', so we repeat the
+     full value here and only vary the top side via calc())             */
   .dashboard-nav { height: var(--header-h); }
-  .dashboard-main { padding-top: calc(var(--header-h) + 18px); min-height: 100dvh; }
+  .dashboard-main { padding: calc(var(--header-h) + 18px) 18px 50px; min-height: 100dvh; }
 
   /* Hero */
   .hero {

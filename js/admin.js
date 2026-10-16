@@ -17,33 +17,46 @@ function ensureBackdrop() {
   const el = document.createElement("div");
   el.id = "dashboard-backdrop";
   el.className = "dashboard-backdrop";
+  el.style.display = "none";
   document.body.appendChild(el);
 }
 
 function closeDashboardNav() {
-  const nav = document.querySelector(".dashboard-nav");
+  const nav = document.querySelector(".dashboard-nav nav");
+  const navAside = document.querySelector(".dashboard-nav");
   const btn = document.querySelector("[data-dashboard-toggle]");
-  if (nav && btn) {
-    nav.classList.remove("is-open");
+  const backdrop = document.getElementById("dashboard-backdrop");
+  if (nav) nav.style.display = "none";
+  if (navAside) navAside.classList.remove("is-open");
+  if (btn) {
     btn.classList.remove("is-open");
     btn.setAttribute("aria-expanded", "false");
     btn.setAttribute("aria-label", "Open navigation");
-    document.getElementById("dashboard-backdrop")?.classList.remove("is-visible");
-    document.body.classList.remove("is-nav-open");
   }
+  if (backdrop) {
+    backdrop.classList.remove("is-visible");
+    backdrop.style.display = "none";
+  }
+  document.body.classList.remove("is-nav-open");
 }
 
 function openDashboardNav() {
-  const nav = document.querySelector(".dashboard-nav");
+  const nav = document.querySelector(".dashboard-nav nav");
+  const navAside = document.querySelector(".dashboard-nav");
   const btn = document.querySelector("[data-dashboard-toggle]");
-  if (nav && btn) {
-    nav.classList.add("is-open");
+  const backdrop = document.getElementById("dashboard-backdrop");
+  if (nav) nav.style.display = "block";
+  if (navAside) navAside.classList.add("is-open");
+  if (btn) {
     btn.classList.add("is-open");
     btn.setAttribute("aria-expanded", "true");
     btn.setAttribute("aria-label", "Close navigation");
-    document.getElementById("dashboard-backdrop")?.classList.add("is-visible");
-    document.body.classList.add("is-nav-open");
   }
+  if (backdrop) {
+    backdrop.style.display = "";
+    backdrop.classList.add("is-visible");
+  }
+  document.body.classList.add("is-nav-open");
 }
 
 ensureBackdrop();

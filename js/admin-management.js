@@ -24,33 +24,50 @@ if (!backdrop) {
   backdrop = document.createElement("div");
   backdrop.id = "dashboard-backdrop";
   backdrop.className = "dashboard-backdrop";
+  backdrop.style.display = "none";
   document.body.appendChild(backdrop);
 }
 
 function closeDashboardNav() {
-  const nav = document.querySelector(".dashboard-nav");
+  const nav = document.querySelector(".dashboard-nav nav");
+  const navAside = document.querySelector(".dashboard-nav");
   const btn = document.querySelector("[data-dashboard-toggle]");
-  if (nav && btn) {
-    nav.classList.remove("is-open");
+  if (nav) {
+    nav.style.transform = "translateX(100%)";
+    nav.style.pointerEvents = "none";
+  }
+  if (navAside) navAside.classList.remove("is-open");
+  if (btn) {
     btn.classList.remove("is-open");
     btn.setAttribute("aria-expanded", "false");
     btn.setAttribute("aria-label", "Open navigation");
-    backdrop?.classList.remove("is-visible");
-    document.body.classList.remove("is-nav-open");
   }
+  if (backdrop) {
+    backdrop.classList.remove("is-visible");
+    backdrop.style.pointerEvents = "none";
+  }
+  document.body.classList.remove("is-nav-open");
 }
 
 function openDashboardNav() {
-  const nav = document.querySelector(".dashboard-nav");
+  const nav = document.querySelector(".dashboard-nav nav");
+  const navAside = document.querySelector(".dashboard-nav");
   const btn = document.querySelector("[data-dashboard-toggle]");
-  if (nav && btn) {
-    nav.classList.add("is-open");
+  if (nav) {
+    nav.style.transform = "";
+    nav.style.pointerEvents = "auto";
+  }
+  if (navAside) navAside.classList.add("is-open");
+  if (btn) {
     btn.classList.add("is-open");
     btn.setAttribute("aria-expanded", "true");
     btn.setAttribute("aria-label", "Close navigation");
-    backdrop?.classList.add("is-visible");
-    document.body.classList.add("is-nav-open");
   }
+  if (backdrop) {
+    backdrop.style.pointerEvents = "auto";
+    backdrop.classList.add("is-visible");
+  }
+  document.body.classList.add("is-nav-open");
 }
 
 document.querySelector("[data-dashboard-toggle]")?.addEventListener("click", () => {
