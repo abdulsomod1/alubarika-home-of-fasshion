@@ -59,6 +59,12 @@ if (header) {
       </div>
     </nav>`;
 
+  // Defensive: always start with the menu in the closed state on page load.
+  // This clears any orphan state if the page was navigated to while the
+  // menu was open, and ensures no backdrop is visible before event listeners
+  // are attached.
+  document.body.classList.remove("is-nav-open");
+
   // ── Drawer state management ──────────────────────────────────────────────
   const drawer = document.getElementById("nav-drawer");
   const backdrop = document.getElementById("nav-backdrop");
